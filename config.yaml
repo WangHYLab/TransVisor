@@ -1,0 +1,26 @@
+# Transcriptome Visualization Agent Configuration
+
+# API Configuration
+api:
+  key: "your-api-key"
+  model: "deepseek-chat" # or other model
+  base_url: "https://api.deepseek.com" # or other url
+  timeout: 60
+
+# Data Configuration
+data:
+  default_path: "example_data/example_expression.csv"
+  diff_expr_path: "example_data/differential_expression.csv"
+  time_series_path: "example_data/time_series.csv"
+
+# Visualization Configuration
+visualization:
+  default_dpi: 300
+  default_style: "seaborn"
+  default_palette: "viridis"
+  output_dir: "output"
+
+# Agent Configuration
+agent:
+  max_iterations: 10
+  verbose: true
