@@ -1,10 +1,11 @@
 # Transcriptome Visualization Agent Configuration
 
 # API Configuration
+# Note: For security, api.key should be stored in config-local.yaml
 api:
-  key: "your-api-key"
-  model: "deepseek-chat" # or other model
-  base_url: "https://api.deepseek.com" # or other url
+  key: ""  # Do not store real API key here, use config-local.yaml instead
+  model: "deepseek-chat"
+  base_url: "https://api.deepseek.com"
   timeout: 60
 
 # Data Configuration

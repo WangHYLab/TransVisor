@@ -103,7 +103,7 @@ python -m src.cli --data example_data/time_series.csv --request "Create gene exp
 ## Project Structure
 
 ```
-Agent/
+TransVisor/
 ├── config.yaml              # Configuration file
 ├── requirements.txt         # Dependencies
 ├── example_data/            # Sample data

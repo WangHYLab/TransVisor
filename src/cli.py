@@ -129,8 +129,6 @@ Examples:
 
     args = parser.parse_args()
 
-    config.reload()
-
     api_key = args.api_key or config.get_api_key()
     data_path = args.data or config.get_default_data_path()
     model = args.model or config.get_model()

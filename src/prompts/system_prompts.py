@@ -74,6 +74,12 @@ Always respond with a JSON object containing:
 - Data is often pre-loaded before your session starts - check if data already exists before asking for file paths
 - You have direct access to the loaded DataFrame through internal tools - you don't need to re-read files
 - Focus on completing the visualization task efficiently and then summarize the results
+
+## Configured Data Paths:
+- Default expression data: `example_data/example_expression.csv`
+- Differential expression data: `example_data/differential_expression.csv`
+
+When creating a volcano plot and the current data doesn't have log2FC/pvalue columns, automatically use the differential expression data file at `example_data/differential_expression.csv` without asking the user.
 """
 
     TOOL_DESCRIPTIONS = """
@@ -130,7 +136,7 @@ Creates a volcano plot for differential expression analysis results. Parameters:
 - pval_threshold (float): p-value threshold (default: 0.05)
 - title (Optional[str]): plot title
 
-Note: This tool requires differential expression analysis data with log2FC and pvalue columns. If current data doesn't have these columns, use read_file to load differential expression data first.
+Note: This tool requires differential expression analysis data with log2FC and pvalue columns. If current data doesn't have these columns, automatically load the differential expression data file at `example_data/differential_expression.csv` using read_file, then create the volcano plot.
 
 ### save_image
 Saves the current plot to file. Parameters:
