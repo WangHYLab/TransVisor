@@ -13,6 +13,7 @@ An intelligent transcriptome data visualization tool based on ReAct architecture
 - **Context Memory**: Multi-turn dialogue support, remembers loaded data
 - **Scientific Color Schemes**: Professional color maps and palettes
 - **High-Quality Output**: PNG, SVG formats, 300 DPI resolution
+- **Code Generation & Execution**: Automatically generates Python code for custom analysis tasks
 
 ## Quick Start
 
@@ -98,6 +99,9 @@ python -m src.cli --request "Create clustering heatmap for first 6 samples"
 
 # Use time series data
 python -m src.cli --data example_data/time_series.csv --request "Create gene expression clustering heatmap" --show-full-steps
+
+# Custom analysis with code generation - count upregulated and downregulated genes and create bar plot
+python -m src.cli --request "Count the number of upregulated and downregulated differentially expressed genes and create a bar plot" --data example_data/differential_expression.csv
 ```
 
 ## Project Structure
@@ -111,6 +115,7 @@ TransVisor/
 │   ├── differential_expression.csv
 │   └── time_series.csv
 ├── output/                  # Output directory
+│   └── generated_codes/     # Auto-generated Python codes
 ├── src/                     # Source code
 │   ├── cli.py               # CLI interface
 │   ├── config.py            # Config parser

@@ -21,6 +21,7 @@ from .visualizations import (
     create_clustering_heatmap,
     create_volcano_plot
 )
+from .tools.code_executor import CodeExecutor, CodeGenerator
 
 
 class TranscriptomeAgent:
@@ -41,9 +42,13 @@ class TranscriptomeAgent:
         self.data: Optional[pd.DataFrame] = None
         self.current_plot: Optional[Any] = None
         self.last_result: Optional[Dict[str, Any]] = None
-
+        
+        self.code_executor = None
+        self.code_generator = None
+        
         self._setup_tools()
         self._setup_agent()
+        self._init_code_tools()
 
     def _setup_tools(self):
         self.tools = {
@@ -58,6 +63,8 @@ class TranscriptomeAgent:
             'create_clustering_heatmap': self._create_clustering_heatmap,
             'create_volcano_plot': self._create_volcano_plot,
             'save_image': self._save_image,
+            'generate_code': self._generate_code,
+            'execute_code': self._execute_code,
             'final_answer': self._final_answer,
         }
 
@@ -530,6 +537,101 @@ class TranscriptomeAgent:
             "answer": answer,
             "final": True
         }
+    
+    def _init_code_tools(self):
+        """初始化代码生成和执行工具"""
+        if self.code_executor is None:
+            self.code_executor = CodeExecutor(
+                data=self.data,
+                output_dir=self.output_dir
+            )
+        
+        if self.code_generator is None:
+            model_client = DeepSeekClient(
+                api_key=self.api_key,
+                model=self.model
+            )
+            self.code_generator = CodeGenerator(model_client)
+    
+    def _generate_code(self, task_description: str, **kwargs) -> Dict[str, Any]:
+        """根据任务描述生成Python代码"""
+        try:
+            self._init_code_tools()
+            
+            data_info = None
+            if self.data is not None:
+                data_info = {
+                    'shape': self.data.shape,
+                    'columns': list(self.data.columns),
+                    'dtypes': {col: str(dtype) for col, dtype in self.data.dtypes.items()}
+                }
+            
+            code = self.code_generator.generate(
+                task_description=task_description,
+                data_info=data_info
+            )
+            
+            if not code:
+                return {
+                    "success": False,
+                    "error": "Failed to generate code"
+                }
+            
+            self.last_result = {
+                "generated_code": code,
+                "task_description": task_description
+            }
+            
+            return {
+                "success": True,
+                "generated_code": code,
+                "message": "Code generated successfully. Now use execute_code to run it."
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Code generation error: {str(e)}"
+            }
+    
+    def _execute_code(self, code: str, **kwargs) -> Dict[str, Any]:
+        """执行生成的Python代码"""
+        try:
+            self._init_code_tools()
+            
+            self.code_executor.data = self.data
+            
+            result = self.code_executor.execute(code)
+            
+            if result.get('success') and result.get('data') is not None:
+                self.data = result['data']
+                self.code_executor.data = self.data
+            
+            self.last_result = result
+            
+            if result.get('success'):
+                output_msg = f"Code executed successfully"
+                if result.get('output'):
+                    output_msg += f"\nOutput:\n{result['output'][:500]}"
+                
+                return {
+                    "success": True,
+                    "result": result.get('result'),
+                    "output": result.get('output'),
+                    "message": output_msg
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": result.get('error'),
+                    "message": f"Code execution failed: {result.get('error')}"
+                }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Code execution error: {str(e)}"
+            }
 
     def run(self, user_request: str) -> Dict[str, Any]:
         result = self.agent.run(user_request)
