@@ -34,17 +34,20 @@ ENV/
 *~
 
 # Output files
-# output/
-# *.png
-# *.svg
-# *.pdf
+output/
+*.png
+*.svg
+*.pdf
+.csv
+output/generated_codes/
+*.py
 
 # Configuration files with sensitive data
 config-local.yaml
 config.yaml.local
 
 # Data files
-# example_data/*.csv
+example_data/sample.TPM.csv
 # !example_data/.gitkeep
 
 # Test files

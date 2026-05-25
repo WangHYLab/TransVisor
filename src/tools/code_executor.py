@@ -30,11 +30,11 @@ class CodeExecutor:
     }
     
     DANGEROUS_PATTERNS = [
-        'os.system', 'subprocess', 'eval', 'exec',
-        '__import__', 'rm ', 'del ', 'drop ',
-        'os.remove', 'shutil.rmtree', 'os.rmdir',
-        'getattr', 'setattr', 'globals',
-        'locals', 'vars', 'open(',
+        r'\bos\.system\b', r'\bsubprocess\b', r'\beval\s*\(', r'\bexec\s*\(',
+        r'\b__import__\b', r'\brm\s+', r'\bdel\s+', r'\bdrop\s+',
+        r'\bos\.remove\b', r'\bshutil\.rmtree\b', r'\bos\.rmdir\b',
+        r'\bgetattr\s*\(', r'\bsetattr\s*\(', r'\bglobals\s*\(',
+        r'\blocals\s*\(', r'\bvars\s*\(', r'\bopen\s*\(',
     ]
     
     def __init__(self, data: Optional[pd.DataFrame] = None, output_dir: str = 'output'):
@@ -46,8 +46,9 @@ class CodeExecutor:
         """检查代码安全性"""
         import re
         
+        code_lower = code.lower()
         for pattern in self.DANGEROUS_PATTERNS:
-            if pattern.lower() in code.lower():
+            if re.search(pattern, code_lower):
                 return False, f"Dangerous pattern detected: {pattern}"
         
         if 'import' in code:
